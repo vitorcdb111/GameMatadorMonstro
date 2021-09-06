@@ -9,6 +9,7 @@ new Vue({
         monsterLife: 100,
         logs: [],
         cssPlayer: true,
+        result: false,
     },
     watch:
     {
@@ -18,6 +19,7 @@ new Vue({
             {
                 this.loser = true;
                 this.iniciar = true;
+                this.result = true;
             }
         },
 
@@ -27,6 +29,7 @@ new Vue({
             {
                 this.winner = true;
                 this.iniciar = true;
+                this.result = true;
             }
         }
 
@@ -43,29 +46,53 @@ new Vue({
     },
     methods:
     {
+        attack(especial)
+        {
+            this.hurt('monsterLife', especial, 'Jogador', 'Monstro', 'player')
+            if(this.monsterLife > 0) {
+                this.hurt('playerLife', false, 'Monstro', 'Jogador', 'monster')
+            }
+        },
         playerAttack()
         {
-            damage = Math.floor((Math.random() * 10) + 1);
-            this.logs.unshift("Jogador atingiu o monstro com " + damage);
-            this.monsterLife -= damage;     
+            return  damage = Math.floor((Math.random() * 10) + 1);
         },        
         monsterAttack()
         {
-            damage = Math.floor((Math.random() * 15) + 1);
-            this.logs.unshift("Monstro atingiu o jogador com " + damage);
-            this.playerLife -= damage;     
+            return damage = Math.floor((Math.random() * 15) + 1);
         },
-        playerSpecialAttack()
+        hurt(prop, especial, source, target, cls)
         {
-            damage = Math.floor((Math.random() * 20) + 1);
-            this.logs.unshift("Jogador atingiu o monstro com " + damage);
-            this.monsterLife -= damage; 
+            const plus = especial ? 5 : 0
+            let hurt = 0;
+            if(source == 'Jogador')
+            {
+                 hurt = this.playerAttack() + plus;
+            }        
+            else
+            {   
+                 hurt = this.monsterAttack();
+            }
+            this[prop] = Math.max(this[prop] - hurt, 0)
+            if(especial == true)
+            {
+                this.registerLog(`${source} atingiu ${target} com ${hurt}.`, 'speceialAttackLog')
+            }
+            else
+            {
+                this.registerLog(`${source} atingiu ${target} com ${hurt}.`, cls)
+            }            
         },
         healPlayer()
         {
-            heal = Math.floor((Math.random() * 15) + 1);
-            this.logs.unshift("Jogador recebeu uma cura de " + heal);
+            heal = Math.floor((Math.random() * 15) + 1);         
             this.playerLife += heal;
+            this.registerLog(`Jogador recebeu uma cura de ${heal}.`, 'healLog')
+            this.hurt('playerLife', false, 'Monstro', 'Jogador', 'monster')
+        },
+        registerLog(text, cls) 
+        {
+            this.logs.unshift({ text, cls })
         },
         reset()
         {
@@ -74,6 +101,7 @@ new Vue({
             this.winner = false;
             this.loser = false;
             this.logs = [];
+            this.result = false;
         }
     }
 })

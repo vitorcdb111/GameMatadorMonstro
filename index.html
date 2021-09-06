@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!DOCTYPE html>  
 <head>
     <meta charset="UTF-8">
     <title>Matador de Monstro</title>
@@ -24,14 +24,14 @@
                 <div>{{ monsterLife }}%</div>
             </div>
         </div>
-        <div class="panel result">
+        <div v-if="result" class="panel result">
             <div class="win" v-if="winner">Você ganhou!!! :)</div>
             <div class="lose" v-if="loser">Você perdeu! :(</div>
         </div>
         <div class="panel buttons">
             <template v-if="!iniciar">
-                <button class="btn attack" @click="playerAttack(), monsterAttack()">Ataque</button>
-                <button class="btn especial-attack" @click="playerSpecialAttack(), monsterAttack()">Ataque Especial</button>
+                <button class="btn attack" @click="attack(false)">Ataque</button>
+                <button class="btn especial-attack" @click="attack(true)">Ataque Especial</button>
                 <button class="btn heal" @click="healPlayer(), monsterAttack()">Curar</button>
                 <button class="btn give-up" @click="iniciar = !iniciar, reset()">Desistir</button>
             </template>
@@ -39,7 +39,7 @@
         </div>
         <div class="panel logs" v-if="logs.length">
             <ul>
-                <li v-for="value in logs" :class="estiloLogs"> {{ value }} </li>
+                <li v-for="value in logs" :class="value.cls"> {{ value.text }} </li>
             </ul>
         </div>
     </div>
